@@ -316,7 +316,7 @@ std::string d;
 */
 
 
- //  std::reverse(water_speed, water_speed + 2);
+  std::reverse(water_speed, water_speed + 1);
   f = *reinterpret_cast<int*>(water_speed);
 
 std::cout<<f<<std::endl;
