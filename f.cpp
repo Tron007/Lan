@@ -271,7 +271,6 @@ void handle_process_rq_modbus_data(const boost::system::error_code& error, boost
 	    std::cout << "Errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr: " << error.message() << std::endl;
 	  }
 
-
 	water_level = (char *)malloc((2)*sizeof(char));
 	discharge = (char *)malloc((17)*sizeof(char));
 	water_speed = (char *)malloc((3)*sizeof(char));
@@ -291,35 +290,14 @@ void handle_process_rq_modbus_data(const boost::system::error_code& error, boost
     pe= (unsigned)strlen(rq_modbus_data);
     std::cout << "rq modbus data result:  " << pe<< std::endl;
 
-   for (int l = 0; l < 128; l++) {
 
-    	std::cout<< char_int_hex(rq_modbus_data[l]);
-
-    }std::cout<< std::endl;
-
-	   std::cout<< char_int_hex( water_level[0])<< std::endl;
-	   std::cout<< char_int_hex( water_level[1])<< std::endl;
    num = 0;
    f = 0;
    int ds;
 
    ds = char_hex_to_int(water_level);
    std:: cout<<ds<<std::endl;
-   /*
-std::string d;
-   std::stringstream stream1;
-   stream1<< std::hex <<"0x";
-   stream1<<char_int_hex(water_level[0]);
-   stream1<<char_int_hex(water_level[1]);
-   stream1>>ds;
-  std:: cout<<ds<<std::endl;
-*/
 
-
-  std::reverse(water_speed, water_speed + 1);
-  f = *reinterpret_cast<int*>(water_speed);
-
-std::cout<<f<<std::endl;
 
 // ************************************************************************************************
 }
@@ -344,7 +322,7 @@ void handle_sleep_rq_modbus_data(boost::shared_ptr< boost::asio::ip::tcp::socket
 
 
 // ************************************************************************************************
-
+//change
 
 void handle_write(const boost::system::error_code& error,
 	      size_t /*bytes_transferred*/)
