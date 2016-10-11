@@ -116,7 +116,7 @@ bool data_not_receive[6] = {true, true, true, true, true, true};
 size_t attempt_num = 0;
 size_t modem_num = 0;
 int pe;
-
+int ds;
 
 
 std::string char_int_hex(unsigned char t1)
@@ -272,32 +272,38 @@ void handle_process_rq_modbus_data(const boost::system::error_code& error, boost
 	  }
 
 	water_level = (char *)malloc((2)*sizeof(char));
-	discharge = (char *)malloc((17)*sizeof(char));
-	water_speed = (char *)malloc((3)*sizeof(char));
-	//memcpy(water_level, "0x", 1);
-	memcpy(water_level, rq_modbus_data+3, 2);
+	discharge = (char *)malloc((2)*sizeof(char));
+	water_speed = (char *)malloc((2)*sizeof(char));
 
 
-	memcpy(discharge, "0x", 1);
-	memcpy(discharge, rq_modbus_data+0,16);
-
-	memcpy(water_speed, "0x", 1);
-	memcpy(water_speed, rq_modbus_data+3, 2);
-
-    data_level = 0;
-    data_discharge = 0;
-    i = 0;
-    pe= (unsigned)strlen(rq_modbus_data);
-    std::cout << "rq modbus data result:  " << pe<< std::endl;
-
-
-   num = 0;
-   f = 0;
-   int ds;
-
+   //for (int Pos=3;Pos<85)
+   memcpy(water_level, rq_modbus_data+3, 2);
    ds = char_hex_to_int(water_level);
    std:: cout<<ds<<std::endl;
 
+   all_data[modem_num] = boost::lexical_cast<std::string>(ds);
+
+   mysql_init(&mysql);
+   					conn=mysql_real_connect(&mysql, server, user, password, database, 0, 0, 0);
+   					if(conn==NULL)
+   					{
+   						std::cout<<mysql_error(&mysql)<<std::endl;
+   					}
+
+   					add_data = "INSERT INTO Dis_table (DateTime, Level1, Discharge1, Level2, Discharge2, Level3, Discharge3, Level4, Discharge4, Level5, Discharge5, Level6, Discharge6) "
+   																	"values (NOW(), '"+all_data[0]+"', '"+all_data[1]+"', '"+all_data[2]+"', '"+all_data[3]+"', '"+all_data[4]+"', '"+all_data[5]+"', '"+all_data[6]+"', '"+all_data[7]+"', '"+all_data[8]+"', '"+all_data[9]+"', '"+all_data[10]+"', '"+all_data[11]+"')";
+
+
+   					query_state=mysql_query(conn, add_data.c_str());
+
+   					if(query_state!=0)
+   									{
+   										std::cout<<mysql_error(conn)<<std::endl<<std::endl;
+   									}
+
+   									mysql_free_result(res);
+   									mysql_close(conn);
+   									usleep(1000000);
 
 // ************************************************************************************************
 }
@@ -314,7 +320,6 @@ void handle_sleep_rq_modbus_data(boost::shared_ptr< boost::asio::ip::tcp::socket
     boost::asio::io_service io;
     std::cout << "rq modbus data result: " << std::endl;
     boost::asio::deadline_timer t(io, boost::posix_time::seconds( 1 ));
-
     t.async_wait(boost::bind(handle_rq_modbus_data, socket));
     io.run();
 }
