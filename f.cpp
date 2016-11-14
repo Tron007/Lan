@@ -85,7 +85,7 @@ const char *user="007";
 const char *password="007";
 const char *database="amaDB";
 std::string add_data; // string with mysql insert command
-std::string all_data[12]; // store data from devices
+std::string all_data[43]; // store data from devices
 std::string water_speed_data[6]; // water data from devices
 
 //boost::array<char, 32> recv_buf;
@@ -101,7 +101,7 @@ std::string modbus_serial_data_string = ""; // store modbus serial answer in str
 char modbus_serial_data[64]; // store modbus serial answer
 char modbus_data[64]; // store modbus device parameters answer
 char str_ack_data[64]; // RQ-30 availability answer
-char rq_modbus_data[128]; // RQ-30 data answer
+char rq_modbus_data[128]; // RQ-30 data answer0
 std::string str1("|02"); // key for find level data
 std::string str3("|05"); // key for find discharge data
 std::string data; // modbus device parameters answer converted to string
@@ -277,21 +277,32 @@ void handle_process_rq_modbus_data(const boost::system::error_code& error, boost
 
 
    //for (int Pos=3;Pos<85)
+	for (int l = 0; l < 40; l++) {
+	    	std::cout<< char_int_hex(rq_modbus_data[l]);
+	    }
    memcpy(water_level, rq_modbus_data+3, 2);
    ds = char_hex_to_int(water_level);
+
    std:: cout<<ds<<std::endl;
+ if (ds==2) {
+	 int iter=5;
 
-   all_data[modem_num] = boost::lexical_cast<std::string>(ds);
+	 for (int i=0;i<23;i++) {
 
+   memcpy(water_level, rq_modbus_data+iter, 2);
+   ds = char_hex_to_int(water_level);
+   all_data[i] = boost::lexical_cast<std::string>(ds);
+   iter++;iter++;
+	 }
    mysql_init(&mysql);
-   					conn=mysql_real_connect(&mysql, server, user, password, database, 0, 0, 0);
+   conn=mysql_real_connect(&mysql, server, user, password, database, 0, 0, 0);
    					if(conn==NULL)
    					{
    						std::cout<<mysql_error(&mysql)<<std::endl;
    					}
 
-   					add_data = "INSERT INTO Dis_table (DateTime, Level1, Discharge1, Level2, Discharge2, Level3, Discharge3, Level4, Discharge4, Level5, Discharge5, Level6, Discharge6) "
-   																	"values (NOW(), '"+all_data[0]+"', '"+all_data[1]+"', '"+all_data[2]+"', '"+all_data[3]+"', '"+all_data[4]+"', '"+all_data[5]+"', '"+all_data[6]+"', '"+all_data[7]+"', '"+all_data[8]+"', '"+all_data[9]+"', '"+all_data[10]+"', '"+all_data[11]+"')";
+   					add_data = "INSERT INTO Tebeske (Datetime, lvl1, lvl2, lvl3, lvl4, lvl5, lvl6, lvl7, lvl8, lvl9, lvl10, lvl11, lvl12,lvl13,lvl14,lvl15,lvl16,lvl17,lvl18,lvl19,lvl20lvl21,lvl122,lvl23) "
+   							"values (NOW(), '"+all_data[0]+"', '"+all_data[1]+"', '"+all_data[2]+"', '"+all_data[3]+"', '"+all_data[4]+"', '"+all_data[5]+"', '"+all_data[6]+"', '"+all_data[7]+"', '"+all_data[8]+"', '"+all_data[9]+"', '"+all_data[10]+"', '"+all_data[11]+"', '"+all_data[12]+"', '"+all_data[13]+"', '"+all_data[14]+"', '"+all_data[15]+"', '"+all_data[16]+"', '"+all_data[17]+"', '"+all_data[18]+"', '"+all_data[19]+"', '"+all_data[20]+"', '"+all_data[21]+"', '"+all_data[22]+"')";
 
 
    					query_state=mysql_query(conn, add_data.c_str());
@@ -304,7 +315,7 @@ void handle_process_rq_modbus_data(const boost::system::error_code& error, boost
    									mysql_free_result(res);
    									mysql_close(conn);
    									usleep(1000000);
-
+ }
 // ************************************************************************************************
 }
 
@@ -446,7 +457,7 @@ int main()
 	rq_modbus.dat1 = 0;
 	rq_modbus.dat2 = 0;
 	rq_modbus.dat3 = 0;
-	rq_modbus.dat4 = 40;
+	rq_modbus.dat4 = 43;
 
 	CRC_RQ = rq_modbus.id;
 	CRC_RQ += rq_modbus.fu;
